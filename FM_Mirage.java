@@ -12,8 +12,6 @@ public class FM_Mirage extends AdvancedRobot {
     private boolean seguindoInimigo = false;  // Controle para seguir o inimigo
     private boolean sobAtaque = false;  // Controle para saber se o robô está sendo atacado
     private boolean emBusca = true;  // Controle para saber se o robô está em modo de busca
-
-    //Testando bot do telegram
     
     public void run() {
         // Define as cores do robô
