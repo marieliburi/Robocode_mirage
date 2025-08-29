@@ -20,26 +20,30 @@ jobs:
         distribution: 'temurin'
         java-version: '11'
 
-    - name: Compilar o Robô
+    - name: Compilar FM_Mirage.java com dependencia robocode.jar
       run: javac -cp "libs/robocode.jar" src/FM_Mirage.java
 
-    - name: Baixar Checkstyle
-      run: |
-        curl -L -o checkstyle.jar https://github.com/checkstyle/checkstyle/releases/download/checkstyle-10.12.4/checkstyle-10.12.4-all.jar
+    - name: Baixar Checkstyle (10.12.4)
+      run: wget https://github.com/checkstyle/checkstyle/releases/download/checkstyle-10.12.4/checkstyle-10.12.4-all.jar -O checkstyle.jar
 
     - name: Rodar Checkstyle
       run: java -jar checkstyle.jar -c libs/google_checks.xml src/FM_Mirage.java
 
     - name: Baixar SpotBugs
-      run: |
-        curl -L -o spotbugs.zip https://github.com/spotbugs/spotbugs/releases/download/4.7.3/spotbugs-4.7.3.zip
-        unzip spotbugs.zip -d spotbugs
+      run: wget https://repo1.org/maven2/coom/github/sotbugs/spotbugs/4.8.3/spotbugs-4.8.3.tgz -O spotbugs.tgz
+
+    - name: Extrair SpotBugs
+      run: tar -xzf spotbugs.tgz
+
+    - name: Dar permissao de execução ao spotbugs
+      run: chmod +x spotbugs-4.8.3/bin/spotbugs
 
     - name: Rodar SpotBugs
       run: |
-        mkdir -p build
-        javac -cp "libs/robocode.jar" -d build src/*.java
-        spotbugs/bin/spotbugs -textui -effort:max -high build
+        mkdir -p out
+        javac -cp "libs/robocode.jar" -d out src/FM_Mirage.java
+        spotbugs-4.8.3/bin/spotbugs -textui out/
 
     - name: Mensagem Final
+      if: ${{ success() }} 
       run: echo "✅ Pipeline executado com sucesso! Seu robô está compilando, formatado e sem bugs críticos!"
