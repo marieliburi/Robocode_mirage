@@ -21,7 +21,7 @@ jobs:
         java-version: '11'
 
     - name: Compilar o Robô
-      run: javac -cp "libs/robocode.jar" src/*.java
+      run: javac -cp "libs/robocode.jar" src/FM_Mirage.java
 
     - name: Baixar Checkstyle
       run: |
