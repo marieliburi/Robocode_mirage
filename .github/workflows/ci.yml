@@ -1,0 +1,45 @@
+name: Pipeline de Qualidade e Segurança
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  qualidade-seguranca:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout do código
+      uses: actions/checkout@v4
+
+    - name: Instalar Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '11'
+
+    - name: Compilar o Robô
+      run: javac -cp "libs/robocode.jar" src/*.java
+
+    - name: Baixar Checkstyle
+      run: |
+        curl -L -o checkstyle.jar https://github.com/checkstyle/checkstyle/releases/download/checkstyle-10.12.4/checkstyle-10.12.4-all.jar
+
+    - name: Rodar Checkstyle
+      run: java -jar checkstyle.jar -c libs/google_checks.xml src/*.java
+
+    - name: Baixar SpotBugs
+      run: |
+        curl -L -o spotbugs.zip https://github.com/spotbugs/spotbugs/releases/download/4.7.3/spotbugs-4.7.3.zip
+        unzip spotbugs.zip -d spotbugs
+
+    - name: Rodar SpotBugs
+      run: |
+        mkdir -p build
+        javac -cp "libs/robocode.jar" -d build src/*.java
+        spotbugs/bin/spotbugs -textui -effort:max -high build
+
+    - name: Mensagem Final
+      run: echo "✅ Pipeline executado com sucesso! Seu robô está compilando, formatado e sem bugs críticos!"
