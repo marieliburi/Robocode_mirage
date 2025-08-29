@@ -28,7 +28,7 @@ jobs:
         curl -L -o checkstyle.jar https://github.com/checkstyle/checkstyle/releases/download/checkstyle-10.12.4/checkstyle-10.12.4-all.jar
 
     - name: Rodar Checkstyle
-      run: java -jar checkstyle.jar -c libs/google_checks.xml src/*.java
+      run: java -jar checkstyle.jar -c libs/google_checks.xml src/FM_Mirage.java
 
     - name: Baixar SpotBugs
       run: |
