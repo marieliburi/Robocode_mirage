@@ -6,15 +6,17 @@ import java.util.Random;
 
 public class FM_Mirage extends AdvancedRobot {
 
+    //Envio no grupo do telegram
+    
     private Random aleatorio = new Random();  
     private boolean movendoParaFrente = true;  // Variável para rastrear o movimento (frente ou trás)
     private long ultimoTempoDeTiro = 0;  // Variável para armazenar o tempo do último disparo
     private boolean seguindoInimigo = false;  // Controle para seguir o inimigo
     private boolean sobAtaque = false;  // Controle para saber se o robô está sendo atacado
     private boolean emBusca = true;  // Controle para saber se o robô está em modo de busca
-
+    
     public void run() {
-        // Define as cores do robô
+
         setColors(new Color(128, 0, 128), Color.black, Color.blue);
 
         // Configura o radar e o canhão para girar independentemente do corpo do robô
