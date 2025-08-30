@@ -1,4 +1,4 @@
-name: Pipeline de Qualidade e Segurança
+name: Qualidade e Segurança
 
 on:
   push:
@@ -11,39 +11,31 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout do código
-      uses: actions/checkout@v4
+      - name: Checkout do código
+        uses: actions/checkout@v4
 
-    - name: Instalar Java
-      uses: actions/setup-java@v4
-      with:
-        distribution: 'temurin'
-        java-version: '11'
+      - name: Instalar Java 11
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 11
 
-    - name: Compilar FM_Mirage.java com dependencia robocode.jar
-      run: javac -cp "libs/robocode.jar" src/FM_Mirage.java
+      - name: Compilar o Robô
+        run: |
+          mkdir -p build
+          javac -cp "libs/robocode.jar" -d build src/*.java
 
-    - name: Baixar Checkstyle (10.12.4)
-      run: wget https://github.com/checkstyle/checkstyle/releases/download/checkstyle-10.12.4/checkstyle-10.12.4-all.jar -O checkstyle.jar
+      - name: Rodar Checkstyle
+        run: |
+          wget https://github.com/checkstyle/checkstyle/releases/download/checkstyle-10.12.4/checkstyle-10.12.4-all.jar -O checkstyle.jar
+          java -jar checkstyle.jar -c libs/google_checks.xml src/*.java
 
-    - name: Rodar Checkstyle
-      run: java -jar checkstyle.jar -c libs/google_checks.xml src/FM_Mirage.java
+      - name: Rodar SpotBugs
+        run: |
+          wget https://github.com/spotbugs/spotbugs/releases/download/4.8.3/spotbugs-4.8.3.tgz -O spotbugs.tgz
+          tar -xvzf spotbugs.tgz
+          chmod +x spotbugs-4.8.3/bin/spotbugs
+          ./spotbugs-4.8.3/bin/spotbugs -textui -effort:max -high -auxclasspath libs/robocode.jar build
 
-    - name: Baixar SpotBugs
-      run: wget https://repo1.org/maven2/coom/github/sotbugs/spotbugs/4.8.3/spotbugs-4.8.3.tgz -O spotbugs.tgz
-
-    - name: Extrair SpotBugs
-      run: tar -xzf spotbugs.tgz
-
-    - name: Dar permissao de execução ao spotbugs
-      run: chmod +x spotbugs-4.8.3/bin/spotbugs
-
-    - name: Rodar SpotBugs
-      run: |
-        mkdir -p out
-        javac -cp "libs/robocode.jar" -d out src/FM_Mirage.java
-        spotbugs-4.8.3/bin/spotbugs -textui out/
-
-    - name: Mensagem Final
-      if: ${{ success() }} 
-      run: echo "✅ Pipeline executado com sucesso! Seu robô está compilando, formatado e sem bugs críticos!"
+      - name: Mensagem final
+        run: echo "Pipeline finalizado com sucesso! Código analisado e aprovado."
